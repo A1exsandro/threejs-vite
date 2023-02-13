@@ -3,3 +3,5 @@
 
 # Some Dependencies
 * npm install three
+* npm install dat.gui
+* npm i @tweenjs/tween.js@^18
