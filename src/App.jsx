@@ -1,51 +1,124 @@
-import { useEffect } from 'react'
-import * as THREE from 'three' 
-import { GUI } from 'dat.gui'
+import { useEffect } from 'react';
 
-import SceneInit from './lib/SceneInit'
+import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 
-// import './App.css'
+import SceneInit from './lib/SceneInit';
 
 function App() {
   useEffect(() => {
-    const test = new SceneInit('myThreeJsCanvas')
-    test.initialize()
-    test.animate()
+    const test = new SceneInit('myThreeJsCanvas');
+    test.initialize();
+    test.animate();
 
-    // ADD BOX
-    const boxGeometry = new THREE.BoxGeometry(16, 16, 16);
-    const boxMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
+    // part 0 - add axis helper
+    const axesHelper = new THREE.AxesHelper(8);
+    test.scene.add(axesHelper);
+
+    // part 0 - add box mesh which will be tweened
+    const boxGeometry = new THREE.BoxGeometry(4, 4, 4);
+    const boxMaterial = new THREE.MeshNormalMaterial();
     const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
     test.scene.add(boxMesh);
 
-    const gui = new GUI()
-    // Changing Geometry (scale, rotation)
-    gui.add(boxMesh.rotation, 'x', 0, Math.PI).name('Rotate X Axis');
-    gui.add(boxMesh.rotation, 'y', 0, Math.PI).name('Rotate Y Axis');
-    gui.add(boxMesh.rotation, 'z', 0, Math.PI).name('Rotate Z Axis');
-    gui.add(boxMesh.scale, 'x', 0, 2).name('Scale X Axis');
-    gui.add(boxMesh.scale, 'y', 0, 2).name('Scale Y Axis');
-    gui.add(boxMesh.scale, 'z', 0, 2).name('Scale Z Axis');
+    // part 0 - add ground mesh for reference
+    const groundGeometry = new THREE.BoxGeometry(24, 1, 24);
+    const groundMaterial = new THREE.MeshNormalMaterial();
+    const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+    groundMesh.position.y = -4;
+    test.scene.add(groundMesh);
 
-    // Updating Material (color, wireframe)
-    const materialParams = {
-      boxMeshColor: boxMesh.material.color.getHex()
+    // part 0 - ensure that tween.js is running
+    const animate = (t) => {
+      TWEEN.update(t);
+      window.requestAnimationFrame(animate);
     };
-    gui.add(boxMesh.material, 'wireframe');
-    gui
-      .addColor(materialParams, 'boxMeshColor')
-      .onChange((value) => boxMesh.material.color.set(value));
+    animate();
 
-    return () => {
-      gui.destroy()
-    }
-  },[])
+    // part 1 - set up basic tween.js examples
+    // const tween = new TWEEN.Tween({ x: 0 })
+    //   .to({ x: 5 }, 2000)
+    //   .onUpdate((coords) => {
+    //     boxMesh.position.x = coords.x;
+    //   });
+    // tween.start();
+
+    // const tween = new TWEEN.Tween({ x: 0, xRotation: 0 })
+    //   .to({ x: 5, xRotation: Math.PI / 2 }, 2000)
+    //   .onUpdate((coords) => {
+    //     boxMesh.position.x = coords.x;
+    //     boxMesh.rotation.x = coords.xRotation;
+    //   });
+    // tween.start();
+
+    // part 2 - tween.js functions (repeat, delay)
+    // const tween = new TWEEN.Tween({ x: 0, y: 0, xRotation: 0 })
+    //   .to({ x: 5, y: 8, xRotation: Math.PI / 2 }, 2000)
+    //   .onUpdate((coords) => {
+    //     boxMesh.position.x = coords.x;
+    //     boxMesh.position.y = coords.y;
+    //     boxMesh.rotation.x = coords.xRotation;
+    //   })
+    //   .repeat(Infinity)
+    //   .delay(500);
+    // tween.start();
+
+    // part 3 - tween.js easing functions (show pics)
+    // const tween1 = new TWEEN.Tween({ x: 0, y: 0, xRotation: 0 })
+    //   .to({ x: 5, y: 8, xRotation: Math.PI / 2 }, 2000)
+    //   .onUpdate((coords) => {
+    //     boxMesh.position.x = coords.x;
+    //     boxMesh.position.y = coords.y;
+    //     boxMesh.rotation.x = coords.xRotation;
+    //   })
+    //   .easing(TWEEN.Easing.Exponential.InOut)
+    //   .repeat(Infinity)
+    //   .delay(500);
+    // tween1.start();
+
+    // const boxMesh2 = new THREE.Mesh(boxGeometry, boxMaterial);
+    // test.scene.add(boxMesh2);
+    // const tween2 = new TWEEN.Tween({ x: 0, y: 0, xRotation: 0 })
+    //   .to({ x: -5, y: 8, xRotation: Math.PI / 2 }, 2000)
+    //   .onUpdate((coords) => {
+    //     boxMesh2.position.x = coords.x;
+    //     boxMesh2.position.y = coords.y;
+    //     boxMesh2.rotation.x = coords.xRotation;
+    //   })
+    //   .easing(TWEEN.Easing.Linear.None)
+    //   .repeat(Infinity)
+    //   .delay(500);
+    // tween2.start();
+
+    // part 3 - chaining tweens together
+    const tween1 = new TWEEN.Tween({ x: 0, y: 0, xRotation: 0 })
+      .to({ x: 5, y: 8, xRotation: Math.PI / 2 }, 2000)
+      .onUpdate((coords) => {
+        boxMesh.position.x = coords.x;
+        boxMesh.position.y = coords.y;
+        boxMesh.rotation.x = coords.xRotation;
+      })
+      .easing(TWEEN.Easing.Exponential.InOut)
+      .delay(100);
+    const tween2 = new TWEEN.Tween({ x: 5, y: 8, xRotation: Math.PI / 2 })
+      .to({ x: 0, y: 0, xRotation: 0 }, 2000)
+      .onUpdate((coords) => {
+        boxMesh.position.x = coords.x;
+        boxMesh.position.y = coords.y;
+        boxMesh.rotation.x = coords.xRotation;
+      })
+      .easing(TWEEN.Easing.Linear.None)
+      .delay(100);
+    tween1.chain(tween2);
+    tween2.chain(tween1);
+    tween1.start();
+  }, []);
 
   return (
     <div>
       <canvas id="myThreeJsCanvas" />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
