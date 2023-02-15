@@ -1,5 +1,6 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import Stats from 'three/examples/jsm/libs/stats.module';
 
 export default class SceneInit {
@@ -10,7 +11,7 @@ export default class SceneInit {
     this.renderer = undefined;
 
     // NOTE: Camera params;
-    this.fov = 45;
+    this.fov = 30;
     this.nearPlane = 1;
     this.farPlane = 1000;
     this.canvasId = canvasId;
@@ -19,6 +20,7 @@ export default class SceneInit {
     this.clock = undefined;
     this.stats = undefined;
     this.controls = undefined;
+    this.loader = undefined;
 
     // NOTE: Lighting is basically required.
     this.spotLight = undefined;
@@ -33,7 +35,7 @@ export default class SceneInit {
       1,
       1000
     );
-    this.camera.position.z = 96;
+    this.camera.position.z = 20;
 
     // NOTE: Specify a canvas which is already created in the HTML.
     const canvas = document.getElementById(this.canvasId);
@@ -42,13 +44,17 @@ export default class SceneInit {
       // NOTE: Anti-aliasing smooths out the edges.
       antialias: true,
     });
-    this.renderer.setSize(500, 500);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
 
     this.clock = new THREE.Clock();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.stats = Stats();
     document.body.appendChild(this.stats.dom);
+
+    // LOADER THE OBJECT
+    this.loader = new GLTFLoader()
+    this.loadModel()
 
     // ambient light which is for the whole scene
     this.ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -69,11 +75,11 @@ export default class SceneInit {
     // this.scene.background = this.loader.load('./pics/space.jpeg');
 
     // NOTE: Declare uniforms to pass into glsl shaders.
-    // this.uniforms = {
-    //   u_time: { type: 'f', value: 1.0 },
-    //   colorB: { type: 'vec3', value: new THREE.Color(0xfff000) },
-    //   colorA: { type: 'vec3', value: new THREE.Color(0xffffff) },
-    // };
+    this.uniforms = {
+      u_time: { type: 'f', value: 1.0 },
+      colorB: { type: 'vec3', value: new THREE.Color(0xfff000) },
+      colorA: { type: 'vec3', value: new THREE.Color(0xffffff) },
+    };
   }
 
   animate() {
@@ -85,9 +91,15 @@ export default class SceneInit {
     this.controls.update();
   }
 
+  loadModel() {
+    this.loader.load('RobotExpressive.glb', (gltf) => {
+      this.scene.add(gltf.scene)
+    })
+  }
+
   render() {
     // NOTE: Update uniform data on each render.
-    // this.uniforms.u_time.value += this.clock.getDelta();
+    this.uniforms.u_time.value += this.clock.getDelta();
     this.renderer.render(this.scene, this.camera);
   }
 
