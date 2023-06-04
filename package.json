@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.71.0",
     "@tweenjs/tween.js": "^18.6.4",
     "cannon-es": "^0.20.0",
     "cannon-es-debugger": "^1.0.0",
