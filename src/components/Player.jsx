@@ -3,8 +3,11 @@ import { useSphere } from "@react-three/cannon"
 import { Vector3 } from "three"
 import { useRef } from "react"
 import { useEffect } from "react"
+import { useKeyboard } from "../hooks/useKeyboard"
 
 export const Player = () => {
+  const actions = useKeyboard() 
+
   const { camera } = useThree()
   const [ref, api] = useSphere(() => ({
     mass: 1,
