@@ -7,4 +7,7 @@
 * npm i @tweenjs/tween.js@^18
 * npm i cannon-es
 * npm i cannon-es-debugger
-*  npm i @react-three/drei
+
+## New
+* npm i @react-three/drei
+* npm i @react-three/cannon
