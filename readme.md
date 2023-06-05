@@ -12,3 +12,5 @@
 * npm i @react-three/drei
 * npm i @react-three/cannon
 * npm i @react-three/fiber
+* npm i zustand
+* npm i nanoid
